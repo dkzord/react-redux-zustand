@@ -1,4 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { useSelector } from 'react-redux';
+import type { RootState } from '..';
 
 const playerSlice = createSlice({
   name: 'player',
@@ -61,12 +63,40 @@ const playerSlice = createSlice({
     currentLessonIndex: 0,
   },
   reducers: {
-    play: (state, action) => {
+    play: (state, action: PayloadAction<[number, number]>) => {
       state.currentModuleIndex = action.payload[0];
       state.currentLessonIndex = action.payload[1];
+    },
+    next: (state) => {
+      const nextLessonIndex = state.currentLessonIndex + 1;
+      const lessonsAmount =
+        state.course.modules[state.currentModuleIndex].lessons[nextLessonIndex];
+
+      if (lessonsAmount) {
+        state.currentLessonIndex = nextLessonIndex;
+      } else {
+        const nextModuleIndex = state.currentModuleIndex + 1;
+        const nextModule = state.course.modules[nextModuleIndex];
+
+        if (nextModule) {
+          state.currentModuleIndex = nextModuleIndex;
+          state.currentLessonIndex = 0;
+        }
+      }
     },
   },
 });
 
 export const player = playerSlice.reducer;
-export const { play } = playerSlice.actions;
+export const { play, next } = playerSlice.actions;
+
+export const useCurrentLesson = () => {
+  return useSelector((state: RootState) => {
+    const { course, currentModuleIndex, currentLessonIndex } = state.player;
+
+    const currentModule = course.modules[currentModuleIndex];
+    const currentLesson = currentModule.lessons[currentLessonIndex];
+
+    return { currentModule, currentLesson };
+  });
+};
