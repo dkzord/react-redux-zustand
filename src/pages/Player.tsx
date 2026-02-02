@@ -1,18 +1,30 @@
 import { MessageCircle } from 'lucide-react';
 import { useEffect } from 'react';
-import { Header } from '../components/Header';
-import { Module } from '../components/Module';
-import { Video } from '../components/Video';
+import { useDispatch } from 'react-redux';
+import { Header } from '../components/Header/Header';
+import { Module } from '../components/Module/Module';
+import { Video } from '../components/Video/Video';
+import { api } from '../lib/axios';
 import { useAppSelector } from '../store';
-import { useCurrentLesson } from '../store/slices/player';
+import { useCurrentLesson } from '../store/slices/hook/current-lesson';
+import { start } from '../store/slices/player';
 
 export function Player() {
-  const modules = useAppSelector((state) => state.player.course.modules);
+  const dispatch = useDispatch();
+  const modules = useAppSelector((state) => state.player.course?.modules);
 
   const { currentLesson } = useCurrentLesson();
 
   useEffect(() => {
-    document.title = `Assistindo: ${currentLesson.title}`;
+    api.get('/courses/1').then((response) => {
+      dispatch(start(response.data));
+    });
+  }, []);
+
+  useEffect(() => {
+    if (currentLesson) {
+      document.title = `Assistindo: ${currentLesson.title}`;
+    }
   }, [currentLesson]);
 
   return (
@@ -33,13 +45,14 @@ export function Player() {
           </div>
 
           <aside className="w-80 absolute top-0 bottom-0 right-0 border-l border-zinc-800 bg-zinc-900 divide-y-2 divide-zinc-900 overflow-y-scroll scrollbar scrollbar-thin scrollbar-track-zinc-950 scrollbar-thumb-zinc-800">
-            {modules.map((module, index) => (
-              <Module
-                title={module.title}
-                amountOfLessons={module.lessons.length}
-                moduleIndex={index}
-              />
-            ))}
+            {modules &&
+              modules.map((module, index) => (
+                <Module
+                  title={module.title}
+                  amountOfLessons={module.lessons.length}
+                  moduleIndex={index}
+                />
+              ))}
           </aside>
         </main>
       </div>

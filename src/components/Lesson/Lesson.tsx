@@ -1,11 +1,5 @@
 import { PlayCircle, VideoIcon } from 'lucide-react';
-
-interface LessonProps {
-  title: string;
-  duration: string;
-  isCurrent?: boolean;
-  onPlay: () => void;
-}
+import type { LessonProps } from './types';
 
 export function Lesson({
   title,

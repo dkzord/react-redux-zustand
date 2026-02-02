@@ -1,7 +1,11 @@
-import { useCurrentLesson } from '../store/slices/player';
+import { useCurrentLesson } from '../../store/slices/hook/current-lesson';
 
 export function Header() {
   const { currentModule, currentLesson } = useCurrentLesson();
+
+  if (!currentLesson || !currentModule) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-1">
