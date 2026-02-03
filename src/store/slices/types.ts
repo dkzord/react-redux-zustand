@@ -19,4 +19,5 @@ export interface PlayerState {
   currentModuleIndex: number;
   currentLessonIndex: number;
   course: Course | null;
+  isLoading: boolean;
 }

@@ -10,6 +10,7 @@ const initialState: PlayerState = {
   course: null,
   currentModuleIndex: 0,
   currentLessonIndex: 0,
+  isLoading: true,
 };
 
 export const loadCouse = createAsyncThunk('player/load', async () => {
@@ -47,8 +48,13 @@ export const playerSlice = createSlice({
     },
   },
   extraReducers(builder) {
+    builder.addCase(loadCouse.pending, (state) => {
+      state.isLoading = true;
+    });
+
     builder.addCase(loadCouse.fulfilled, (state, action) => {
       state.course = action.payload;
+      state.isLoading = false;
     });
   },
 });
